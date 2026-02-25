@@ -1,0 +1,131 @@
+{
+  "url": "https://example.com/",
+  "extractedAt": "2026-02-24T15:53:25.716383Z",
+  "logo": null,
+  "favicons": [
+    {
+      "type": "favicon.ico",
+      "url": "https://example.com/favicon.ico",
+      "sizes": null
+    }
+  ],
+  "colors": {
+    "semantic": {},
+    "palette": [],
+    "cssVariables": {}
+  },
+  "typography": {
+    "styles": [
+      {
+        "context": "heading-1",
+        "family": "system-ui",
+        "fallbacks": null,
+        "size": "24px (1.50rem)",
+        "weight": 700,
+        "lineHeight": null,
+        "spacing": null,
+        "transform": null,
+        "isFluid": null,
+        "clampValues": null,
+        "fontFeatures": null
+      },
+      {
+        "context": "heading-1",
+        "family": "system-ui",
+        "fallbacks": null,
+        "size": "16px (1.00rem)",
+        "weight": 400,
+        "lineHeight": null,
+        "spacing": null,
+        "transform": null,
+        "isFluid": null,
+        "clampValues": null,
+        "fontFeatures": null
+      },
+      {
+        "context": "link",
+        "family": "system-ui",
+        "fallbacks": null,
+        "size": "16px (1.00rem)",
+        "weight": 400,
+        "lineHeight": null,
+        "spacing": null,
+        "transform": null,
+        "isFluid": null,
+        "clampValues": null,
+        "fontFeatures": null
+      }
+    ],
+    "sources": {
+      "googleFonts": [],
+      "adobeFonts": false,
+      "variableFonts": false
+    }
+  },
+  "spacing": {
+    "scaleType": "8px",
+    "commonValues": [
+      {
+        "px": "16px",
+        "rem": "1.00rem",
+        "count": 4,
+        "numericValue": 16
+      },
+      {
+        "px": "16.08px",
+        "rem": "1.00rem",
+        "count": 2,
+        "numericValue": 16.08
+      },
+      {
+        "px": "162px",
+        "rem": "10.13rem",
+        "count": 2,
+        "numericValue": 162
+      }
+    ]
+  },
+  "borderRadius": {
+    "values": []
+  },
+  "borders": {
+    "combinations": []
+  },
+  "shadows": {},
+  "components": {
+    "buttons": [],
+    "inputs": {
+      "text": [],
+      "checkbox": [],
+      "radio": [],
+      "select": []
+    },
+    "links": [
+      {
+        "color": "rgb(51, 68, 136)",
+        "textDecoration": "underline",
+        "fontWeight": "400",
+        "states": {
+          "default": {
+            "color": "rgb(51, 68, 136)",
+            "textDecoration": "underline"
+          },
+          "hover": null
+        }
+      }
+    ],
+    "badges": {
+      "all": [],
+      "byVariant": {
+        "error": [],
+        "warning": [],
+        "success": [],
+        "info": [],
+        "neutral": []
+      }
+    }
+  },
+  "breakpoints": {},
+  "iconSystem": {},
+  "frameworks": {}
+}
