@@ -8,13 +8,13 @@
       <img src="https://img.shields.io/pypi/v/web-design-tokens" alt="PyPI">
     </a>
     <a href="https://github.com/mangodxd/web-design-tokens/actions">
-      <img src="https://img.shields.io/github/actions/workflow/status/mangodxd/iris/ci.yml?branch=main" alt="CI">
+      <img src="https://img.shields.io/github/actions/workflow/status/mangodxd/web-design-tokens/ci.yml?branch=main" alt="CI">
     </a>
     <a href="https://pypi.org/project/web-design-tokens/">
       <img src="https://img.shields.io/pypi/pyversions/web-design-tokens" alt="Python versions">
     </a>
     <a href="LICENSE">
-      <img src="https://img.shields.io/github/license/mangodxd/iris" alt="License">
+      <img src="https://img.shields.io/github/license/mangodxd/web-design-tokens" alt="License">
     </a>
   </p>
   <p>
