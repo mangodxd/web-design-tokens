@@ -4,8 +4,8 @@ import random
 import asyncio
 from urllib.parse import urlparse
 from datetime import datetime, timezone
-from iris.core.colors import ConvertColor
-from iris.core.logger import setup_logger
+from web_design_tokens.core.colors import ConvertColor
+from web_design_tokens.core.logger import setup_logger
 
 """
 /**

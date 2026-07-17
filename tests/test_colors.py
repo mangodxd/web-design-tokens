@@ -1,6 +1,6 @@
 """Unit tests for color conversion (no browser needed)."""
 
-from iris.core.colors import ConvertColor, HEX_to_RGB, RGB_to_LCH, RGB_to_OKLCH
+from web_design_tokens.core.colors import ConvertColor, HEX_to_RGB, RGB_to_LCH, RGB_to_OKLCH
 
 
 class TestConvertColor:

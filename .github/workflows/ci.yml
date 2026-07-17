@@ -38,8 +38,8 @@ jobs:
           playwright install chromium
       - name: Test packaging
         run: |
-          python -c "import iris; print('Package imports OK')"
-          python -c "from iris.core.colors import ConvertColor; print('ConvertColor imports OK')"
+          python -c "import web_design_tokens; print('Package imports OK')"
+          python -c "from web_design_tokens.core.colors import ConvertColor; print('ConvertColor imports OK')"
       - name: Run unit tests
         run: |
           pip install pytest

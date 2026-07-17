@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "iris-design-tokens"
+name = "web-design-tokens"
 version = "0.1.0"
 description = "Extract any website's full design system — logos, colors, fonts, spacing, and more — into ready-to-use CSS tokens in seconds."
 readme = "README.md"
@@ -34,13 +34,13 @@ dependencies = [
 requires-python = ">=3.11"
 
 [project.scripts]
-iris = "iris.cli:entry_point"
+iris = "web_design_tokens.cli:entry_point"
 
 [tool.setuptools.packages.find]
-include = ["iris", "iris.*"]
+include = ["web_design_tokens", "web_design_tokens.*"]
 
 [tool.setuptools.package-data]
-iris = ["scripts/*.js"]
+web_design_tokens = ["scripts/*.js"]
 
 [tool.ruff]
 line-length = 120

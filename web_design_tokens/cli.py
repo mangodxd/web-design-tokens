@@ -1,7 +1,7 @@
 """IRIS command-line entry point for `iris <url>`."""
 
 import asyncio
-from iris.__main__ import main as async_main
+from web_design_tokens.__main__ import main as async_main
 
 
 def entry_point():

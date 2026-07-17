@@ -9,9 +9,9 @@ from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 from rich.console import Console
 
-from iris.core.extractors import extractBranding
-from iris.core.display import display
-from iris.core.w3c_exporter import toW3CFormat
+from web_design_tokens.core.extractors import extractBranding
+from web_design_tokens.core.display import display
+from web_design_tokens.core.w3c_exporter import toW3CFormat
 
 async def main():
     parser = argparse.ArgumentParser(prog="iris", description="Extract design tokens from any website")

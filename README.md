@@ -1,24 +1,24 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/mangodxd/iris/main/showcase.png" alt="IRIS Demo" width="700">
+  <img src="https://raw.githubusercontent.com/mangodxd/web-design-tokens/main/showcase.png" alt="IRIS Demo" width="700">
   <br>
   <h1>IRIS</h1>
   <p><strong>One command to extract any website's design system</strong></p>
   <p>
-    <a href="https://pypi.org/project/iris-design-tokens/">
-      <img src="https://img.shields.io/pypi/v/iris-design-tokens" alt="PyPI">
+    <a href="https://pypi.org/project/web-design-tokens/">
+      <img src="https://img.shields.io/pypi/v/web-design-tokens" alt="PyPI">
     </a>
-    <a href="https://github.com/mangodxd/iris/actions">
+    <a href="https://github.com/mangodxd/web-design-tokens/actions">
       <img src="https://img.shields.io/github/actions/workflow/status/mangodxd/iris/ci.yml?branch=main" alt="CI">
     </a>
-    <a href="https://pypi.org/project/iris-design-tokens/">
-      <img src="https://img.shields.io/pypi/pyversions/iris-design-tokens" alt="Python versions">
+    <a href="https://pypi.org/project/web-design-tokens/">
+      <img src="https://img.shields.io/pypi/pyversions/web-design-tokens" alt="Python versions">
     </a>
     <a href="LICENSE">
       <img src="https://img.shields.io/github/license/mangodxd/iris" alt="License">
     </a>
   </p>
   <p>
-    <code>pip install iris-design-tokens</code> •
+    <code>pip install web-design-tokens</code> •
     <code>iris stripe.com</code>
   </p>
 </div>
@@ -27,7 +27,7 @@
 
 ```bash
 # Install
-pip install iris-design-tokens
+pip install web-design-tokens
 playwright install chromium
 
 # Run — extracts colors, fonts, spacing, logos, components in seconds
@@ -148,7 +148,7 @@ Analyzing public CSS is legal under US DMCA § 1201 and EU Software Directive. U
 ---
 
 <div align="center">
-  <a href="https://github.com/mangodxd/iris/issues">Report a bug</a> •
-  <a href="https://github.com/mangodxd/iris/discussions">Discussion</a> •
+  <a href="https://github.com/mangodxd/web-design-tokens/issues">Report a bug</a> •
+  <a href="https://github.com/mangodxd/web-design-tokens/discussions">Discussion</a> •
   <a href="LICENSE">MIT License</a>
 </div>
