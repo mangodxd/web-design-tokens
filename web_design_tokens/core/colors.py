@@ -1,5 +1,6 @@
 import math
 import re
+
 from .logger import setup_logger
 
 """
@@ -85,10 +86,10 @@ def RGB_to_OKLCH(r,g,b):
     lr = srgb_to_linear(r)
     lg = srgb_to_linear(g)
     lb = srgb_to_linear(b)
-    
+
     oklab = linearRGB_to_OKLAB(lr,lg,lb)
     return OKLAB_to_OKLCH(oklab['l'], oklab['a'], oklab['b'])
-    
+
 def formatLCH(lch,alpha=None):
     """
     Format LCH values as CSS lch() string
@@ -179,13 +180,13 @@ def ConvertColor(string):
         else:
             # Fallback to hex parsing if RGB-like pattern is not detected
             data = HEX_to_RGB(string)
-        
+
         if not data:
             return None
 
         r,g,b,a = data['r'],data['g'],data['b'],data.get('a')
         hex_val = f"#{r:02x}{g:02x}{b:02x}"
-        
+
         # Compute perceptual color spaces once; reused across outputs
         lch = RGB_to_LCH(r,g,b)
         oklch = RGB_to_OKLCH(r,g,b)
@@ -203,7 +204,7 @@ def ConvertColor(string):
             'hasAlpha': bool(a)
         }
     except Exception as e:
-        
+
         logger.error(f"Error processing color {string}: {e}")
         # Hard fallback: color parsing should never break the extraction pipeline
         return {

@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 
 """
@@ -15,15 +15,15 @@ from logging.handlers import RotatingFileHandler
 def setup_logger(name: str):
     log_dir = 'logs'
     os.makedirs(log_dir, exist_ok=True)
-    
+
     logger = logging.getLogger(name)
-    
+
     if not logger.handlers:
         logger.setLevel(logging.DEBUG)
 
         fpath = os.path.join(log_dir, 'app.log')
         fhandler = RotatingFileHandler(
-            fpath, 
+            fpath,
             maxBytes=1024*1024*5, #5mb
             backupCount=5,
             encoding='utf-8'

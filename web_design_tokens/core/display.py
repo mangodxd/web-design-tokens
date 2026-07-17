@@ -1,10 +1,11 @@
 from datetime import datetime
-from rich.console import Console
-from rich.tree import Tree
-from rich.text import Text
-from rich.markup import escape
-from .colors import ConvertColor
 
+from rich.console import Console
+from rich.markup import escape
+from rich.text import Text
+from rich.tree import Tree
+
+from .colors import ConvertColor
 
 """
 /**
@@ -41,7 +42,7 @@ class BrandDisplay:
             l_url = logo.get('url')
             l_w = logo.get('width')
             l_h = logo.get('height')
-            
+
             if l_url:
                 l_node.add(f"[blue link={l_url}]{l_url}[/blue link]")
             if l_w and l_h:
@@ -55,10 +56,10 @@ class BrandDisplay:
                 f_url = f.get('url', '')
                 f_type = f.get('type', '')
                 f_size = f.get('sizes')
-                
+
                 sz = f"[dim] · {f_size}[/dim]" if f_size else ""
                 t_pad = f_type.ljust(18)
-                
+
                 name = f"[#8BE9FD]{escape(t_pad)}[/#8BE9FD]"
                 link = f"[blue link={f_url}]{f_url}[/blue link]"
                 f_node.add(f"{name} {link}{sz}")
@@ -68,7 +69,7 @@ class BrandDisplay:
         if colors:
             c_node = tree.add("[bold]Colors[/bold]")
             all_c = []
-            
+
             semantic = colors.get('semantic', {})
             for role, val in semantic.items():
                 if val:
@@ -103,15 +104,15 @@ class BrandDisplay:
                     unique[key]['label'] = f"{curr_lbl}, {c['label']}" if curr_lbl else c['label']
 
             for c in unique.values():
-                # UI/UX things 
+                # UI/UX things
                 is_high = c['confidence'] == 'high'
                 conf_c = "#50FA7B" if is_high else "#FFB86C"
                 c_hex = c['hex']
                 c_lbl = c['label']
-                
+
                 swatch = f"[{c_hex}]■[/]" if c_hex.startswith("#") else ""
                 lbl = f" [dim]{escape(c_lbl)}[/dim]" if c_lbl else ""
-                
+
                 sub = c_node.add(Text.from_markup(f"[{conf_c}]●[/{conf_c}] {swatch} {c_hex}{lbl}"))
                 sub.add(f"[dim]rgb:   {c['rgb']}[/dim]")
                 sub.add(f"[dim]lch:   {c['lch']}[/dim]")
@@ -123,7 +124,7 @@ class BrandDisplay:
             t_node = tree.add("[bold]Typography[/bold]")
             sources = typo.get('sources', {})
             google = sources.get('googleFonts', []) if isinstance(sources, dict) else []
-            
+
             if google:
                 t_node.add(f"[dim]Fonts: {', '.join(google[:3])}[/dim]")
 
@@ -176,8 +177,8 @@ class BrandDisplay:
             sh_node = tree.add("[bold]Shadows[/bold]")
             valid_sh = [x for x in shadows if x.get('confidence') in ('high', 'medium')]
             sorted_sh = sorted(
-                valid_sh, 
-                key=lambda x: (x.get('confidence') == 'high', x.get('count', 0)), 
+                valid_sh,
+                key=lambda x: (x.get('confidence') == 'high', x.get('count', 0)),
                 reverse=True
             )[:8]
             for s in sorted_sh:
@@ -196,10 +197,10 @@ class BrandDisplay:
                 states = btn.get('states', {})
                 default_st = states.get('default', {})
                 bg = default_st.get('backgroundColor', '')
-                
+
                 swatch = f"[{bg} on black]  [/] " if bg.startswith('#') else ""
                 b_sub = btn_node.add(f"Variant: {swatch}[bold]{bg}[/bold]")
-                
+
                 for sk in ['default', 'hover', 'focus']:
                     st = states.get(sk)
                     if st:

@@ -1,6 +1,7 @@
-from urllib.parse import urlparse
-import re
 import logging
+import re
+from urllib.parse import urlparse
+
 from .colors import ConvertColor
 
 """
@@ -44,7 +45,7 @@ def to_w3c_dimension(value):
         if isinstance(value, (int, float)): return {'value': float(value), 'unit': 'px'}
         if isinstance(value, dict) and 'px' in value: return {'value': float(value['px']), 'unit': 'px'}
         return {'value': float(value), 'unit': 'px'}
-    except: return {'value': 0, 'unit': 'px'}
+    except Exception: return {'value': 0, 'unit': 'px'}
 
 def sanitize(name):
     """
@@ -60,10 +61,10 @@ def sanitize(name):
 def export_colors(colors):
     if not colors or not colors.get('palette'): return None
     tokens = {}
-    
+
     # semantic
     if colors.get('semantic'):
-        sem = {sanitize(k): {'$type': 'color', '$value': get_w3c_color(v if isinstance(v, str) else v.get('color'))} 
+        sem = {sanitize(k): {'$type': 'color', '$value': get_w3c_color(v if isinstance(v, str) else v.get('color'))}
                for k, v in colors['semantic'].items() if v}
         if sem: tokens['semantic'] = sem
 
@@ -73,7 +74,7 @@ def export_colors(colors):
         '$type': 'color', '$value': get_w3c_color(c['color']),
         '$description': f"Count: {c.get('count', 0)}, Confidence: {c.get('confidence')}"
     } for i, c in enumerate(valid_p)}
-    
+
     return tokens
 
 def export_typography(typo):
@@ -95,7 +96,7 @@ def export_typography(typo):
         if s.get('weight'): val['fontWeight'] = {'$type': 'fontWeight', '$value': int(s['weight']) if str(s['weight']).isdigit() else 400}
         if s.get('lineHeight'): val['lineHeight'] = {'$type': 'number', '$value': float(s['lineHeight'])}
         text_styles[name] = {'$type': 'typography', '$value': val}
-    
+
     tokens['style'] = text_styles
     return tokens
 
@@ -107,7 +108,7 @@ def export_spacing(spacing):
 def export_radius(br):
     vals = br.get('values') if br else None
     if not vals: return None
-    return {f"radius-{i+1}": {'$type': 'dimension', '$value': to_w3c_dimension(e['value'])} 
+    return {f"radius-{i+1}": {'$type': 'dimension', '$value': to_w3c_dimension(e['value'])}
             for i, e in enumerate([x for x in vals if x.get('confidence') != 'low'][:6])}
 
 def export_borders(b):

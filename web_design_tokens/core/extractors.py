@@ -1,9 +1,10 @@
-import re
+import asyncio
 import os
 import random
-import asyncio
+import re
+from datetime import UTC, datetime
 from urllib.parse import urlparse
-from datetime import datetime, timezone
+
 from web_design_tokens.core.colors import ConvertColor
 from web_design_tokens.core.logger import setup_logger
 
@@ -50,7 +51,7 @@ class Browser:
 
         if is_chronium:
             options['permissions'] = ['clipboard-read', 'clipboard-write']
-        
+
         context = await browser.new_context(**options)
         await context.add_init_script(RUNME_JS)
         return context
@@ -68,7 +69,7 @@ class PageNavigator:
         is_diff = urlparse(init).hostname != urlparse(final).hostname
         msg = "[bold yellow] ⚠︎ Redirected to different domain:" if is_diff else "[bold cyan] 🛈 Redirected within same domain:"
         self.console.print(f"{msg}\n    From: [dim]{init}[/dim]\n    To:   [cyan]{final}[/cyan]")
-    
+
     async def navigate(self, url: str, attempts: int = 3):
         """
         WHAT: 
@@ -85,16 +86,16 @@ class PageNavigator:
                     self.status.update(f"[cyan]Navigating to {url} (Attempt {attempt}/{attempts})...[/cyan]")
                 init_url = url
                 await self.page.goto(url, wait_until="domcontentloaded", timeout=20000 * self.tm)
-                
+
                 final_url = self.page.url
                 await self._log_redirect(init_url, final_url)
 
                 if self.console:
                     self.console.print("[bold green]  ✓ Page loaded[/bold green]")
-                
+
                 if self.status:
                     self.status.update("[cyan]Waiting for body content to render...[/cyan]")
-                
+
                 try:
                     # DOM exists does not guarantee content is rendered (common in SPAs)
                     await self.page.wait_for_function(
@@ -110,13 +111,13 @@ class PageNavigator:
 
                 if self.status:
                     self.status.update("[cyan]Waiting for SPA hydration...[/cyan]")
-                
+
                 # fixed hydration delay is intentional:
                 # frameworks often attach listeners after DOM is ready
                 htime = 8000 * self.tm
                 await self.page.wait_for_timeout(htime)
                 self.console.print(f"[bold cyan]  ✓ SPA hydration completed ({htime/1000}s)[/bold cyan]")
-                
+
                 try:
                     await self.page.wait_for_selector("main, header, [data-hero], section", timeout=10000 * self.tm)
                     if self.console:
@@ -137,12 +138,12 @@ class PageNavigator:
                     if self.console:
                         self.console.print(f"[bold green]  ✓ Content validated: {content_len} chars[/bold green]")
                     return True
-                
+
                 if self.console:
                     self.console.print(f"[bold yellow] ⚠ Low content length: {content_len} chars[/bold yellow]")
-                
+
                 await self.page.wait_for_timeout(3000 * self.tm)
-                
+
             except Exception as err:
                 if attempt >= attempts:
                     raise err
@@ -158,9 +159,9 @@ class BrandExtractor:
     async def _run_script(self, filename: str, arg=None):
         try:
             if filename not in self._script_cache:
-                with open(os.path.join(baseDIR, "..", "scripts", filename), "r") as f:
+                with open(os.path.join(baseDIR, "..", "scripts", filename)) as f:
                     self._script_cache[filename] = f.read()
-            
+
             script = self._script_cache[filename]
             return await self.page.evaluate(script, arg) if arg else await self.page.evaluate(script)
         except Exception as e:
@@ -175,14 +176,14 @@ class BrandExtractor:
             "extractLinkStyles.js", "extractBadgeStyles.js", "extractBreakpoints.js",
             "detectIconSystem.js", "detectFrameworks.js"
         ]
-        
+
         tasks = []
         for s in scripts:
             if isinstance(s, tuple):
                 tasks.append(self._run_script(s[0], s[1]))
             else:
                 tasks.append(self._run_script(s))
-                
+
         return await asyncio.gather(*tasks)
 
     def _split_multi_colors(self, val):
@@ -204,33 +205,33 @@ class BrandExtractor:
         """
         hf_colors = []
         elements = await self.page.query_selector_all(INTERACTIVE_SELECTORS)
-        
+
         async def process(el):
             try:
                 is_visible = await el.evaluate("el => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width>0 && s.display!=='none'; }")
                 if not is_visible: return
-                
+
                 get_styles_js = "el => { const s = getComputedStyle(el); return { color: s.color, bg: s.backgroundColor, border: s.borderColor, tag: el.tagName.toLowerCase() }; }"
                 before = await el.evaluate(get_styles_js)
-                
+
                 try:
                     await el.hover(timeout=1000 * self.tm)
                     await self.page.wait_for_timeout(100 * self.tm)
-                except:
+                except Exception:
                     pass
-                
+
                 after = await el.evaluate(get_styles_js)
-                
+
                 ignore_colors = ('rgba(0, 0, 0, 0)', 'transparent')
                 if after['color'] != before['color'] and after['color'] not in ignore_colors:
                     hf_colors.append(after['color'])
                 if after['bg'] != before['bg'] and after['bg'] not in ignore_colors:
                     hf_colors.append(after['bg'])
-                
+
                 b_after = self._split_multi_colors(after['border'])
                 b_before = self._split_multi_colors(before['border'])
                 hf_colors.extend([c for c in b_after if c not in b_before])
-                
+
             except Exception as e:
                 logger.debug(f"Error processing element: {e}")
                 pass
@@ -239,7 +240,7 @@ class BrandExtractor:
             batch = elements[i:i+4]
             tasks = [process(el) for el in batch]
             await asyncio.gather(*tasks)
-        
+
         addedC = 0
         for color in hf_colors:
             # only add interaction-derived colors if they don't already exist
@@ -255,7 +256,7 @@ class BrandExtractor:
                 addedC += 1
         try:
             await self.page.mouse.move(0, 0)
-        except:
+        except Exception:
             pass
 
         return colors_dict, addedC
@@ -275,10 +276,10 @@ async def extractBranding(url, status_updater, browser, console, options=None):
 
         status_updater.update("[cyan]Analyzing design system (14 parallel tasks)...[/cyan]")
         ext = BrandExtractor(page, tm)
-        
+
         extracted_data = await ext.extract_all(url)
-        (logo, colors, typography, spacing, borderRadius, borders, 
-         shadows, buttons, inputs, links, badges, breakpoints, 
+        (logo, colors, typography, spacing, borderRadius, borders,
+         shadows, buttons, inputs, links, badges, breakpoints,
          iconSystem, frameworks) = extracted_data
 
         if console:
@@ -286,7 +287,7 @@ async def extractBranding(url, status_updater, browser, console, options=None):
             t_found = len(typography.get('styles', []))
             console.print(f"[bold green]  ✓ Colors: {c_found} found[/bold green]" if c_found else "[bold yellow] ⚠ Colors: 0 found[/bold yellow]")
             console.print(f"[bold green]  ✓ Typography: {t_found} styles[/bold green]" if t_found else "[bold yellow] ⚠ Typography: 0 styles[/bold yellow]")
-        
+
         status_updater.update("[cyan]Extracting hover/focus state colors...[/cyan]")
         colors, hf_count = await ext.extract_interactive_states(colors)
         if console:
@@ -298,16 +299,16 @@ async def extractBranding(url, status_updater, browser, console, options=None):
             await page.evaluate(dm_script)
             await page.emulate_media(color_scheme="dark")
             await page.wait_for_timeout(500 * tm)
-            
+
             dm_colors = await ext._run_script("extractColors.js")
             dm_btns = await ext._run_script("extractButtonStyles.js")
             dm_links = await ext._run_script("extractLinkStyles.js")
-            
+
             for dc in dm_colors.get('palette', []):
                 if not any(ec.get('normalized') == dc.get('normalized') for ec in colors['palette']):
                     dc['source'] = 'dark-mode'
                     colors['palette'].append(dc)
-            
+
             for b in dm_btns: b['source'] = 'dark-mode'; buttons.append(b)
             for l in dm_links: l['source'] = 'dark-mode'; links.append(l)
             if console:
@@ -342,28 +343,28 @@ async def extractBranding(url, status_updater, browser, console, options=None):
 
         if navigator.timeouts and not opts.get('slow') and console:
             console.print(f"\n[bold yellow]⚠ {len(navigator.timeouts)} timeout(s) occurred:[/bold yellow]")
-            for t in navigator.timeouts: 
+            for t in navigator.timeouts:
                 console.print(f"[dim]  • {t}[/dim]")
             console.print("[cyan]💡 Tip: Try running with --slow flag[/cyan]\n")
 
-        ts = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        ts = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         result = {
-            "url": page.url, 
+            "url": page.url,
             "extractedAt": ts,
-            "logo": logo.get('logo', {}) if logo and isinstance(logo, dict) else {}, 
+            "logo": logo.get('logo', {}) if logo and isinstance(logo, dict) else {},
             "favicons": logo.get('favicons', []) if logo and isinstance(logo, dict) else [],
-            "colors": colors if colors else {}, 
-            "typography": typography if typography else {}, 
-            "spacing": spacing if spacing else {}, 
+            "colors": colors if colors else {},
+            "typography": typography if typography else {},
+            "spacing": spacing if spacing else {},
             "borderRadius": borderRadius if borderRadius else {},
-            "borders": borders if borders else {}, 
+            "borders": borders if borders else {},
             "shadows": shadows if shadows else {},
             "components": {"buttons": buttons if buttons else [], "inputs": inputs if inputs else [], "links": links if links else [], "badges": badges if badges else []},
-            "breakpoints": breakpoints if breakpoints else {}, 
-            "iconSystem": iconSystem if iconSystem else {}, 
+            "breakpoints": breakpoints if breakpoints else {},
+            "iconSystem": iconSystem if iconSystem else {},
             "frameworks": frameworks if frameworks else {}
         }
-        
+
         if is_canvas_only:
             result['note'] = "Website uses canvas/WebGL rendering. Design system cannot be extracted from DOM."
             result['isCanvasOnly'] = True
