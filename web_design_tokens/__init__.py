@@ -1,7 +1,7 @@
 """IRIS — Extract design tokens from any website in seconds."""
 
 __version__ = "0.1.0"
-__author__ = "Nguyen Cong Thuan Huy"
+__author__ = "Nguyễn Công Thuận Huy"
 
 from web_design_tokens.core.extractors import extractBranding
 from web_design_tokens.core.display import display

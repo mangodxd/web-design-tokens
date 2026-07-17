@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "web-design-tokens"
-version = "0.1.0"
+version = "0.1.1"
 description = "Extract any website's full design system — logos, colors, fonts, spacing, and more — into ready-to-use CSS tokens in seconds."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Nguyen Cong Thuan Huy", email = "mangodxdev@gmail.com"}
+    {name = "Nguyễn Công Thuận Huy", email = "phucnop37@gmail.com"}
 ]
 keywords = [
     "design-tokens", "design-system", "css-extractor",
