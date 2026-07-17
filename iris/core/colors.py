@@ -119,20 +119,19 @@ def formatOKLCH(OKLCH,alpha=None):
         return f"oklch({l}% {c} {h} / {alpha})"
     return f"oklch({l}% {c} {h})"
 
-def HEX_to_RGB(hex):
+def HEX_to_RGB(hex_str):
     """
-    Parse a hex color string and return RGB values
-    hex: string - Hex color (#fff, #ffffff, #ffffffaa)
-    returns: { r: number, g: number, b: number, a?: number } | null
+    Parse a hex color string and return RGB values.
+    Supports #rgb, #rrggbb, #rrggbbaa formats.
+    Returns a dict with keys 'r', 'g', 'b', and optional 'a'.
     """
-    if not hex or not hex.startswith('#'):
+    if not hex_str or not hex_str.startswith('#'):
         return None
-    
-    h = (hex.lstrip('#'), 16)
-
+    h = hex_str.lstrip('#')
+    # Expand short form (#rgb) to full form (#rrggbb)
     if len(h) == 3:
-        h = ''.join([c*2 for c in h])
-
+        h = ''.join([c * 2 for c in h])
+    # Ensure we have at least 6 characters for RGB
     if len(h) >= 6:
         i = int(h[:6], 16)
         res = {
@@ -140,13 +139,12 @@ def HEX_to_RGB(hex):
             'g': (i >> 8) & 0xFF,
             'b': i & 0xFF
         }
-        # check if there's an alpha channel in the hex (#RRGGBBAA)
+        # Check for alpha channel (#rrggbbaa)
         if len(h) == 8:
             res['a'] = round(int(h[6:8], 16) / 255, 3)
         return res
     return None
 
-    
 
 def ConvertColor(string):
     """
@@ -179,10 +177,11 @@ def ConvertColor(string):
                 'a': float(matching.group(4)) if matching.group(4) else None
             }
         else:
-        # Fallback to hex parsing if RGB-like pattern is not detected
+            # Fallback to hex parsing if RGB-like pattern is not detected
             data = HEX_to_RGB(string)
         
-        if not data: return None
+        if not data:
+            return None
 
         r,g,b,a = data['r'],data['g'],data['b'],data.get('a')
         hex_val = f"#{r:02x}{g:02x}{b:02x}"

@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iris-design-tokens"
+version = "0.1.0"
+description = "Extract any website's full design system — logos, colors, fonts, spacing, and more — into ready-to-use CSS tokens in seconds."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Nguyen Cong Thuan Huy", email = "mangodxdev@gmail.com"}
+]
+keywords = [
+    "design-tokens", "design-system", "css-extractor",
+    "brand-extraction", "web-scraping", "design-tools",
+    "frontend", "w3c-dtcg", "color-extraction"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Design",
+]
+dependencies = [
+    "playwright>=1.40.0",
+    "rich>=13.0.0",
+]
+requires-python = ">=3.11"
+
+[project.scripts]
+iris = "iris.cli:entry_point"
+
+[tool.setuptools.packages.find]
+include = ["iris", "iris.*"]
+
+[tool.setuptools.package-data]
+iris = ["scripts/*.js"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]

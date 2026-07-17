@@ -1,125 +1,154 @@
-# IRIS: Intelligent Resource & Interface Scanner.
-
-Extract any website's entire Design System—logos, colors, fonts, and spacing—into actionable design tokens in a few seconds. One command to scrape them all.
-
-![IRIS Demo](showcase.png)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/mangodxd/iris/main/showcase.png" alt="IRIS Demo" width="700">
+  <br>
+  <h1>IRIS</h1>
+  <p><strong>One command to extract any website's design system</strong></p>
+  <p>
+    <a href="https://pypi.org/project/iris-design-tokens/">
+      <img src="https://img.shields.io/pypi/v/iris-design-tokens" alt="PyPI">
+    </a>
+    <a href="https://github.com/mangodxd/iris/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/mangodxd/iris/ci.yml?branch=main" alt="CI">
+    </a>
+    <a href="https://pypi.org/project/iris-design-tokens/">
+      <img src="https://img.shields.io/pypi/pyversions/iris-design-tokens" alt="Python versions">
+    </a>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/github/license/mangodxd/iris" alt="License">
+    </a>
+  </p>
+  <p>
+    <code>pip install iris-design-tokens</code> •
+    <code>iris stripe.com</code>
+  </p>
+</div>
 
 ---
 
-## Install
+```bash
+# Install
+pip install iris-design-tokens
+playwright install chromium
 
-**Requirements:** Python 3.11+ and a sense of wonder.
+# Run — extracts colors, fonts, spacing, logos, components in seconds
+iris stripe.com --save-output
 
-Run globally:
-
-```python
-pip install -r requirements.txt
-
-playwright install chromium firefox
-
-python pyiris.py viettel.vn
+# Export as W3C Design Tokens
+iris stripe.com --dtcg
 ```
+
+## What you get
+
+| Category | Extracted |
+|----------|-----------|
+| **Logo** | URL, dimensions, favicons |
+| **Colors** | Semantic, CSS variables, palette — with LCH/OKLCH conversion |
+| **Typography** | Font families, sizes, weights, line heights, Google Fonts detection |
+| **Spacing** | Common gap, margin, padding values |
+| **Border radius** | Rounded corners by element |
+| **Borders** | Width + color combinations |
+| **Shadows** | Box-shadow values with confidence scoring |
+| **Components** | Button, input, link, badge styles (default + hover + focus states) |
+| **Breakpoints** | Responsive media query values |
+| **Frameworks** | Detected UI libraries and icon systems |
 
 ## Usage
 
-| Command Flag | What it does |
-| :--- | :--- |
-| `<url>` | Basic extraction (terminal display only) |
-| `--save-output` | Save JSON to output/{url}/YYYY-MM-DDTHH-MM-SS.json |
-| `--dtcg` | Export in [W3C Design Token](https://www.designtokens.org/) format (auto saves as .tokens.json). |
-| `--dark-mode` | Force dark mode extraction. |
-| `--mobile` | Use mobile viewport (390x844, iPhone 12/13/14/15) for responsive analysis|
-| `--slow` | 3x timeouts (24s hydration). Use this for slow sites. |
-| `--browser=firefox` | Use Firefox instead of Chromium (better for Cloudflare bypass) |
-| `--json-only` | Output raw JSON to terminal (no formatted display, no file save) |
-
-
-NOTE: Default formatted terminal was display only. Use `--save-output` to persist results as JSON files. Browser automatically retries in visible mode if headless extraction fails.
-
-### Browser Selection
-
-By default, *IRIS* uses Chromium. If you encounter bot detection or timeouts (especially on sites behind Cloudflare), try Firefox which is often more successful at bypassing these protections:
+| Flag | Effect |
+|------|--------|
+| `--save-output` | Save JSON to `output/{domain}/` |
+| `--dtcg` | Export in [W3C DTCG](https://www.designtokens.org/) format (auto-saves `.tokens.json`) |
+| `--dark-mode` | Force dark mode extraction |
+| `--mobile` | Mobile viewport (390×844) |
+| `--browser=firefox` | Use Firefox (better Cloudflare bypass) |
+| `--json-only` | Raw JSON to stdout |
+| `--slow` | 3× timeouts for heavy SPAs |
 
 ```bash
-# Use Firefox instead of Chromium
-python pyiris.py viettel.vn --browser=firefox
+# Firefox for Cloudflare-heavy sites
+iris viettel.vn --browser=firefox --save-output
 
-# Combine with other flags
-python pyiris.py viettel.vn --browser=firefox --save-output --dtcg
+# Dark mode on mobile
+iris airbnb.com --dark-mode --mobile --dtcg
 ```
 
-*When to use Firefox:*
-- Sites with aggressive Cloudflare bot detection
-- Sites that block Chromium-based browsers
-- Sites with complex anti-bot mechanisms
-- When you need maximum bypass success rate
+## Output example
 
-### W3C Design Tokens (DTCG) Format
+```
+Brand Extraction
+└── stripe.com
+    ├── Logo
+    │   ├── https://stripe.com/img/logo.svg
+    │   └── 200×60px
+    ├── Colors
+    │   ├── ● ■ #635bff (primary)
+    │   │   ├── rgb: rgb(99 91 255)
+    │   │   └── oklch: oklch(58.3% 0.178 261.25)
+    │   ├── ● ■ #32325d (text-primary)
+    │   │   ├── rgb: rgb(50 50 93)
+    │   │   └── oklch: oklch(32.5% 0.032 271.63)
+    │   └── ...
+    ├── Typography
+    │   ├── Inter
+    │   │   ├── Body → 16px, line-height: 1.5
+    │   │   └── Heading → 32px, weight: 700
+    │   └── ...
+    ├── Spacing → 16px (1rem)  24px (1.5rem)  32px (2rem)
+    ├── Border Radius → 4px  8px  12px
+    ├── Shadows → 8 values
+    ├── Buttons → 3 variants (primary, secondary, outline)
+    ├── Breakpoints → 768px → 1024px → 1280px
+    └── Frameworks → React, Tailwind CSS
+```
 
-Use `--dtcg` to export in the standardized [W3C Design Tokens Community Group](https://www.designtokens.org/) format:
+## How it works
+
+IRIS uses **Playwright** to render pages in a real browser, then runs 14 parallel extractors against the computed DOM:
+
+1. **Stealth navigation** — anti-detection scripts, retry logic, SPA hydration waits
+2. **Parallel extraction** — all 14 extractors run concurrently via `asyncio.gather`
+3. **State simulation** — hovers elements to capture hover/focus colors
+4. **Color science** — converts every color to sRGB, LCH, and OKLCH
+5. **Confidence scoring** — high (brand elements) / medium (interactive) / low (generic)
+
+Extractors cover: logo, colors, typography, spacing, border-radius, borders, shadows, buttons, inputs, links, badges, breakpoints, icon systems, and frameworks.
+
+## Dark mode & mobile
 
 ```bash
-python pyiris.py stripe.com --dtcg
-# Saves to: output/stripe.com/TIMESTAMP.tokens.json
+# Extract both light and dark mode colors
+iris stripe.com --dark-mode
+
+# Mobile-first responsive extraction
+iris stripe.com --mobile --save-output
 ```
 
-The DTCG format is an industry-standard JSON schema that can be consumed by design tools and token transformation libraries like [Style Dictionary](https://styledictionary.com).
+Dark mode colors are deduplicated against light mode. Mobile viewport (390×844 iPhone) captures responsive breakpoints and mobile-specific styles.
 
-### Features
+## W3C DTCG export
 
-Extractions are performed via CLI (`python pyiris.py <url> --save-output`) and automatically appear in the UI.
+The `--dtcg` flag produces tokens conforming to the [W3C Design Tokens Community Group](https://www.designtokens.org/) format — compatible with [Style Dictionary](https://styledictionary.com) and design tool plugins.
 
-## Use Cases
-
-- Brand audits & competitive analysis
-- Design system documentation
-- Reverse engineering brands
-- Multi-site brand consolidation
-
-## How It Works
-
-Uses Playwright to render the page, extracts computed styles from the DOM, analyzes color usage and confidence, groups similar typography, detects spacing patterns, and returns actionable design tokens.
-
-### Extraction Process
-
-1. Browser Launch - Launches browser (Chromium by default, Firefox optional) with stealth configuration
-2. Anti-Detection - Injects scripts to bypass bot detection
-3. Navigation - Navigates to target URL with retry logic
-4. Hydration - Waits for SPAs to fully load (8s initial + 4s stabilization)
-5. Content Validation - Verifies page content is substantial (>500 chars)
-6. Parallel Extraction - Runs all extractors concurrently for speed
-7. Analysis - Analyzes computed styles, DOM structure, and CSS variables
-8. Scoring - Assigns confidence scores based on context and usage
-
-### Color Confidence
-
-- High — Logo, brand elements, primary buttons
-- Medium — Interactive elements, icons, navigation
-- Low — Generic UI components (filtered from display)
-- Only shows high and medium confidence colors in terminal. Full palette in JSON.
+```bash
+iris stripe.com --dtcg
+# → output/stripe.com/2026-07-17T05-00-00.tokens.json
+```
 
 ## Limitations
 
-- Dark mode requires --dark-mode flag (not automatically detected)
-- Hover/focus states extracted from CSS (not fully interactive)
-- Canvas/WebGL-rendered sites cannot be analyzed (e.g., Tesla, Apple Vision Pro demos)
-- JavaScript-heavy sites require hydration time (8s initial + 4s stabilization)
-- Some dynamically-loaded content may be missed
-- Default viewport is 1920x1080 (use --mobile for 390x844 iPhone viewport)
+- Canvas / WebGL–rendered sites (Tesla, Apple Vision Pro) can't be analyzed
+- Dark mode must be forced with `--dark-mode` (not auto-detected)
+- Heavy SPAs may need `--slow` for full hydration
+- Hover/focus states are simulated, not read from CSS (some may be missed)
 
-## Ethics & Legality
+## Ethics
 
-TL;DR: Analyzing public CSS is generally legal (US DMCA § 1201, EU Software Directive).
-Don't be a jerk: Use this for inspiration and audits, not for building a 1:1 clone of a competitor’s site. Respect robots.txt and don't mass-crawl.
-
-## Contributing
-
-Found a bug or a website that breaks the scanner? Pull requests are welcome—even small ones!
-
-Please submit an issue or PR to [Issues](https://github.com/mangodxd/iris/issues).
-
-Let's keep improving IRIS together!
+Analyzing public CSS is legal under US DMCA § 1201 and EU Software Directive. Use for audits and inspiration — don't clone competitors. Respect `robots.txt`.
 
 ---
 
-License: MIT — No restrictions.
+<div align="center">
+  <a href="https://github.com/mangodxd/iris/issues">Report a bug</a> •
+  <a href="https://github.com/mangodxd/iris/discussions">Discussion</a> •
+  <a href="LICENSE">MIT License</a>
+</div>

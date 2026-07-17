@@ -1,1 +1,7 @@
-scripts/*.js linguist-vendored
+* text=auto eol=lf
+*.js text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.png binary

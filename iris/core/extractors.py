@@ -4,8 +4,8 @@ import random
 import asyncio
 from urllib.parse import urlparse
 from datetime import datetime, timezone
-from .colors import ConvertColor
-from .logger import setup_logger
+from iris.core.colors import ConvertColor
+from iris.core.logger import setup_logger
 
 """
 /**
@@ -371,8 +371,3 @@ async def extractBranding(url, status_updater, browser, console, options=None):
         return result
     finally:
         await context.close()
-
-
-        
-        
-    
